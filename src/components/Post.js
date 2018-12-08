@@ -8,7 +8,7 @@ export default class Post extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            foto: this.props.foto
+            foto: { ...this.props.foto, likers: [{}] }
         }
     }
 
@@ -25,6 +25,24 @@ export default class Post extends Component {
         return likeada ? require('../../resources/img/s2-checked.png') : require('../../resources/img/s2.png')
     }
 
+    exibeLikes(likers) {
+        if (likers.length <= 0) {
+            return;
+        }
+        return (<Text style={styles.like}>{likers.length} {likers.length > 1 ? 'curtidas' : 'curtida'}</Text>);
+    }
+
+    exibeLegenda(foto) {
+        if (foto.comentario === '') {
+            return;
+        }
+
+        return (<View style={styles.comentario}>
+            <Text style={styles.tituloComentario}>{foto.loginUsuario}</Text>
+            <Text>{foto.comentario}</Text>
+        </View>);
+    }
+
     render() {
         const { foto } = this.state;
 
@@ -39,6 +57,8 @@ export default class Post extends Component {
                     <TouchableOpacity onPress={this.like.bind(this)}>
                         <Image source={this.loadIcon(foto.likeada)} style={styles.heart}></Image>
                     </TouchableOpacity>
+                    {this.exibeLikes(foto.likers)}
+                    {this.exibeLegenda(foto)}
                 </View>
             </View>
         );
@@ -62,10 +82,21 @@ const styles = StyleSheet.create({
         height: width
     },
     heart: {
+        marginBottom: 10,
         height: 40,
         width: 40
     },
     rodape: {
         margin: 10
+    },
+    like: {
+        fontWeight: 'bold'
+    },
+    comentario: {
+        flexDirection: 'row'
+    },
+    tituloComentario: {
+        fontWeight: 'bold',
+        marginRight: 5
     }
 });
