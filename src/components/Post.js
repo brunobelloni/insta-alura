@@ -1,52 +1,11 @@
 import React, { Component } from 'react';
 import { Dimensions, Image, StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import InputComentario from './InputComentario';
+import Like from './Like';
 
 const width = Dimensions.get('screen').width
 
 export default class Post extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            foto: this.props.foto,
-            valorComentario: '',
-        }
-    }
-
-    like() {
-        const { foto } = this.state;
-
-        let novaLista = []
-        if (!foto.likeada) {
-            novaLista = [
-                ...foto.likers,
-                { login: 'meuUsuario' }
-            ]
-        } else {
-            novaLista = foto.likers.filter(liker => {
-                return liker.login !== 'meuUsuario'
-            })
-        }
-
-        const fotoAtualizada = {
-            ...foto,
-            likeada: !foto.likeada,
-            likers: novaLista
-        }
-
-        this.setState({ foto: fotoAtualizada })
-    }
-
-    loadIcon(likeada) {
-        return likeada ? require('../../resources/img/s2-checked.png') : require('../../resources/img/s2.png')
-    }
-
-    exibeLikes(likers) {
-        if (likers.length <= 0) {
-            return;
-        }
-        return (<Text style={styles.like}>{likers.length} {likers.length > 1 ? 'curtidas' : 'curtida'}</Text>);
-    }
 
     exibeLegenda(foto) {
         if (foto.comentario === '') {
@@ -59,28 +18,8 @@ export default class Post extends Component {
         </View>);
     }
 
-    adicionaComentario() {
-        if (this.state.valorComentario === '') {
-            return;
-        }
-
-        const novaLista = [...this.state.foto.comentarios, {
-            id: this.state.valorComentario,
-            login: 'meuUsuario',
-            texto: this.state.valorComentario
-        }];
-
-        const fotoAtualizada = {
-            ...this.state.foto,
-            comentarios: novaLista
-        }
-
-        this.setState({ foto: fotoAtualizada, valorComentario: '' })
-        this.inputComentario.clear()
-    }
-
     render() {
-        const { foto } = this.state;
+        const { foto, likeCallback, comentarioCallback } = this.props;
 
         return (
             <View>
@@ -89,11 +28,9 @@ export default class Post extends Component {
                     <Text>{foto.loginUsuario}</Text>
                 </View>
                 <Image source={{ uri: foto.urlFoto }} style={styles.image}></Image>
+
                 <View style={styles.rodape}>
-                    <TouchableOpacity onPress={this.like.bind(this)}>
-                        <Image source={this.loadIcon(foto.likeada)} style={styles.heart}></Image>
-                    </TouchableOpacity>
-                    {this.exibeLikes(foto.likers)}
+                    <Like foto={foto} likeCallback={likeCallback} />
                     {this.exibeLegenda(foto)}
 
                     {foto.comentarios.map(comentario =>
@@ -103,15 +40,8 @@ export default class Post extends Component {
                         </View>
                     )}
 
-                    <View style={styles.novoComentario}>
-                        <TextInput style={styles.input}
-                            placeholder="Adicione um comentário..."
-                            ref={input => this.inputComentario = input}
-                            onChangeText={(text) => this.setState({ valorComentario: text })}></TextInput>
-                        <TouchableOpacity onPress={this.adicionaComentario.bind(this)}>
-                            <Image style={styles.icone} source={require('../../resources/img/send.png')}></Image>
-                        </TouchableOpacity>
-                    </View>
+                    <InputComentario idFoto={foto.id} comentarioCallback={comentarioCallback} />
+
                 </View>
             </View>
         );
@@ -134,11 +64,6 @@ const styles = StyleSheet.create({
         width: width,
         height: width
     },
-    heart: {
-        marginBottom: 10,
-        height: 40,
-        width: 40
-    },
     rodape: {
         margin: 10
     },
@@ -152,18 +77,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginRight: 5
     },
-    input: {
-        height: 40,
-        flex: 1,
-    },
-    icone: {
-        width: 30,
-        height: 30,
-    },
-    novoComentario: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd'
-    }
 });
