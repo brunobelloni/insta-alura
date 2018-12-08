@@ -18,9 +18,6 @@ export default class Post extends Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        margin: 10,
-    },
     header: {
         margin: 10,
         flexDirection: 'row',

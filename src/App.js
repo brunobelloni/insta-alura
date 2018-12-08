@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Dimensions, Image, StyleSheet, Text, View, FlatList } from 'react-native';
+import { FlatList } from 'react-native';
 import Post from './components/Post'
-
-const width = Dimensions.get('screen').width
 
 export default class App extends Component {
   render() {
@@ -11,32 +9,11 @@ export default class App extends Component {
     { id: 3, usuario: 'alberto' }];
 
     return (
-      <FlatList style={styles.container}
+      <FlatList
         keyExtractor={item => String(item.id)}
         data={fotos}
-        renderItem={({ item }) => <Post foto={item}/>}
+        renderItem={({ item }) => <Post foto={item} />}
       />
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    margin: 10,
-  },
-  header: {
-    margin: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profilePic: {
-    marginRight: 10,
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-  },
-  image: {
-    width: width,
-    height: width
-  },
-});
